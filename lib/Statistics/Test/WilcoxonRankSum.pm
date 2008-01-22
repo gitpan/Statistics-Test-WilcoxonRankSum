@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Carp::Assert;
 
-use version; our $VERSION = qv('0.0.1');
+use version; our $VERSION = qv('0.0.2');
 
 use Contextual::Return;
 use List::Util qw(sum);

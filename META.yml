@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Statistics-Test-WilcoxonRankSum
-version:             0.0.1
+version:             0.0.2
 abstract:            perform the Wilcoxon (aka Mann-Whitney) rank sum test on two sets of numeric data.
 license:             ~
 generated_by:        ExtUtils::MakeMaker version 6.32
@@ -9,6 +9,7 @@ requires:
     Carp:                          0
     Carp::Assert:                  0
     Class::Std:                    0
+    Contextual::Return:            0
     List::Util:                    0
     Math::BigFloat:                0
     Math::Counting:                0
