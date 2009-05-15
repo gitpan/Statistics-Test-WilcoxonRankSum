@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Carp::Assert;
 
-use version; our $VERSION = qv('0.0.3');
+use version; our $VERSION = qv('0.0.4');
 
 use Contextual::Return;
 use List::Util qw(sum);
@@ -590,7 +590,7 @@ This document describes Statistics::Test::WilcoxonRankSum version 0.0.1
     my $pstatus = $wilcox_test->probability_status();
     # $pstatus is like the strings above
 
-    $wilcox_test->probability_summary();
+    $wilcox_test->summary();
 
     # prints something like:
 
