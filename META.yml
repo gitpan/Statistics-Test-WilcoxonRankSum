@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:               Statistics-Test-WilcoxonRankSum
-version:            0.0.4
+version:            0.0.5
 abstract:           perform the Wilcoxon (aka Mann-Whitney) rank sum test on two sets of numeric data.
 author:
     - Ingrid Falk <ingrid dot falk at loria dot fr>

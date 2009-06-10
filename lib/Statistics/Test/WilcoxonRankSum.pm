@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Carp::Assert;
 
-use version; our $VERSION = qv('0.0.4');
+use version; our $VERSION = qv('0.0.5');
 
 use Contextual::Return;
 use List::Util qw(sum);
@@ -571,6 +571,7 @@ This document describes Statistics::Test::WilcoxonRankSum version 0.0.1
 
     use Statistics::Test::WilcoxonRankSum;
 
+    my $wilcox_test = Statistics::Test::WilcoxonRankSum->new();
 
     my @dataset_1 = (4.6, 4.7, 4.9, 5.1, 5.2, 5.5, 5.8, 6.1, 6.5, 6.5, 7.2);
     my @dataset_2 = (5.2, 5.3, 5.4, 5.6, 6.2, 6.3, 6.8, 7.7, 8.0, 8.1);
