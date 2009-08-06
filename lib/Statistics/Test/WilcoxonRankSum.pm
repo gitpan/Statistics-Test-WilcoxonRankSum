@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Carp::Assert;
 
-use version; our $VERSION = qv('0.0.5');
+use version; our $VERSION = qv('0.0.6');
 
 use Contextual::Return;
 use List::Util qw(sum);
@@ -438,6 +438,8 @@ use Class::Std;
     my $partition_count = bcomb($N, $nA);
     my $have_smaller_rank_sums = $self->smaller_rank_sums_count();
     my $p = Math::BigFloat->new($have_smaller_rank_sums) * 2.0 / Math::BigFloat->new($partition_count);
+
+    if ($p > 1) { $p = 1 };
 
     return $p;
   }
