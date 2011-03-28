@@ -48,11 +48,20 @@ diag("Example from http://www.statsdirect.com/help/nonparametric_methods/mwt.htm
 @dataset_1 = (14.8, 7.3, 5.6, 6.3, 9.0, 4.2, 10.6, 12.5, 12.9, 16.1, 11.4, 2.7);
 @dataset_2 = (12.7, 14.2, 12.6, 2.1, 17.7, 11.8, 16.9, 7.9, 16.0, 10.6, 5.6, 5.6, 7.6, 11.3, 8.3, 6.7, 3.6, 1.0, 2.4, 6.4, 9.1, 6.7, 18.6, 3.2, 6.2, 6.1, 15.3, 10.6, 1.8, 5.9, 9.9, 10.6, 14.8, 5.0, 2.6, 4.0);
 
+
 $wilcox_test->load_data(\@dataset_1, \@dataset_2);
 $prob = Math::BigFloat->new($wilcox_test->probability_normal_approx());
 $expected = 0.528080;
 $pf = sprintf '%f', $prob;
-ok(abs($prob-$expected) < 0.00001, "Example from http://www.statsdirect.com/help/nonparametric_methods/mwt.htm, normal approximation: $pf");
+ok(abs($prob-$expected) < 0.00001, "Example from http://www.statsdirect.com/help/nonparametric_methods/mwt.htm, normal approximation: $pf"); 
+
+# $wilcox_test = Statistics::Test::WilcoxonRankSum->new( { exact_upto => 50 } );
+# $wilcox_test->load_data(\@dataset_1, \@dataset_2);
+# $prob = $wilcox_test->probability();
+# print STDERR "\n";
+# print STDERR $wilcox_test->summary();
+
+
 
 # An example from http://faculty.vassar.edu/lowry/ch11a.html
 # Results there:

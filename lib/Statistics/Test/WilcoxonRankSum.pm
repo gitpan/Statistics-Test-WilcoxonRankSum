@@ -5,7 +5,7 @@ use strict;
 use Carp;
 use Carp::Assert;
 
-use version; our $VERSION = qv('0.0.6');
+use version; our $VERSION = qv('0.0.7');
 
 use Contextual::Return;
 use List::Util qw(sum);
@@ -34,8 +34,11 @@ use Class::Std;
   my %rankSum2_of : ATTR( :get<rankSum_dataset2> ); # rank sum for dataset 2
   my %smaller_rank_sum_of : ATTR;
   my %smaller_ranks_count_of : ATTR;
+  my %expected_rank_count_for_smaller_ranks_count_of : ATTR( :get<expected_rank_count_for_smaller_ranks_count>);
   my %smaller_rank_sums_count_of : ATTR;            # number of possible arrangements with lesser rank sum
                                                     # than the smaller rank sum
+  my %rank_sums_other_than_expected_count_of : ATTR; # number of possible arrangements with rank sum
+                                                    # other than the smaller rank sum
   my %probability_of : ATTR;                   # probability for the ranking with smaller rank sum
   my %probability_normal_approx_of : ATTR;
   
@@ -124,9 +127,11 @@ use Class::Std;
     if ($rank_sum_1 <= $rank_sum_2) {
       $smaller_rank_sum_of{$id} = $rank_sum_1;
       $smaller_ranks_count_of{$id} = $n1_of{$id};
+      $expected_rank_count_for_smaller_ranks_count_of{$id} = $expected_rank_sum_1_of{$id};
     } else {
       $smaller_rank_sum_of{$id} = $rank_sum_2;
       $smaller_ranks_count_of{$id} = $n2_of{$id};
+      $expected_rank_count_for_smaller_ranks_count_of{$id} = $expected_rank_sum_2_of{$id};
     };
     return;
   };
@@ -390,7 +395,7 @@ use Class::Std;
                                 partition => [$nA, $nB],
                                );
 
-    my $count_less_W;
+    my $count_less_W = 0;
     
     while (my $p = $s->next()) {
       my @pA = @{ $p->[0] };
@@ -401,6 +406,62 @@ use Class::Std;
     }
     
     return $count_less_W;
+    
+  };
+
+  sub rank_sums_other_than_expected_counts {
+    my ($self) = @_;
+    my $id = ident $self;
+
+    if ($rank_sums_other_than_expected_count_of{$id}) {
+      return $rank_sums_other_than_expected_count_of{$id};
+    };
+
+    my ($W, $nA) = $self->get_smaller_rank_sum();
+    my $W_exp = $self->get_expected_rank_count_for_smaller_ranks_count();
+
+    my $N = $N_of{$id};
+    my $nB = $N - $nA;
+    my $MaxSum = $MaxSum_of{$id};
+
+    my @ranks = map { $_->[0] } $self->compute_rank_array();
+
+    # let's do some checks before starting the big counting
+    if ($W > $MaxSum) { croak "Rank sum bound $W is bigger than the maximum possible rank sum $MaxSum\n" };
+    if ($N != scalar(@ranks))
+      { croak "Sum of $nA and $nB must be equal to number of ranks: ".scalar(@ranks)."\n" }; 
+
+    # compute all possible partitions
+    my $s = Set::Partition->new(
+                                list => \@ranks,
+                                partition => [$nA, $nB],
+                               );
+
+    my $count_other_W = 0;
+
+    if ($W >= $W_exp) { 
+    
+      while (my $p = $s->next()) {
+	my @pA = @{ $p->[0] };
+	my $sumA = sum @pA;
+	if ($sumA >= $W) {
+	  $count_other_W++;
+	}
+      }
+
+    } else {
+    
+      while (my $p = $s->next()) {
+	my @pA = @{ $p->[0] };
+	my $sumA = sum @pA;
+	if ($sumA <= $W) {
+	  $count_other_W++;
+	}
+      }
+
+    }
+    
+    return $count_other_W;
     
   };
 
@@ -436,7 +497,7 @@ use Class::Std;
     my $N = $N_of{$id};
 
     my $partition_count = bcomb($N, $nA);
-    my $have_smaller_rank_sums = $self->smaller_rank_sums_count();
+    my $have_smaller_rank_sums = $self->rank_sums_other_than_expected_counts();
     my $p = Math::BigFloat->new($have_smaller_rank_sums) * 2.0 / Math::BigFloat->new($partition_count);
 
     if ($p > 1) { $p = 1 };
@@ -705,6 +766,10 @@ Checks which of the two rank sums is the smaller one.
 =item smaller_rank_sums_count
 
 For the set with the smaller rank sum, counts the number of partitions (of the ranks) giving a smaller rank sum than the observed one. Needed to compute the exact probability.
+
+=item rank_sums_other_than_expected_counts
+
+For the set with the smaller rank sum, counts the number of partitions (of the ranks) giving a rank sum other than the observed one (For example if the rank sum is larger than expected, counts the number of partitions giving a rank sum larger than the observed one). Needed to compute the exact probability.
 
 =back
 
